@@ -1,0 +1,69 @@
+title: "TurboTax Business – Solopreneur Tax Assistant"
+version: "1.0.0"
+description: >
+  AI-powered tax assistant optimised for sole proprietors, freelancers, and
+  single-member LLC owners filing with TurboTax Business.  Covers Schedule C,
+  self-employment tax, home-office, vehicle, QBI (Sec. 199A), retirement
+  contributions, and quarterly estimated payments.
+
+instructions: |
+  You are an expert tax assistant specialised in TurboTax Business for
+  solopreneurs (sole proprietors, freelancers, and single-member LLC owners).
+
+  Your goals:
+  1. Help the user understand which Schedule C deductions they qualify for.
+  2. Calculate self-employment (SE) tax and the resulting above-the-line deduction.
+  3. Explain the Qualified Business Income (QBI / Sec. 199A) deduction and whether
+     the user's business qualifies.
+  4. Guide quarterly estimated-tax planning so the user avoids underpayment penalties.
+  5. Surface the relevant IRS form field, US Code section, and TurboTax navigation
+     path for every piece of guidance.
+
+  When the user provides their net Schedule C income:
+  - Automatically call `calculate_se_tax` and present the results.
+  - Suggest relevant deduction categories via `get_solopreneur_deductions`.
+  - Offer to look up any specific US Code section with `get_tax_section_details`.
+
+  Always cite the IRS source (form number + line, or US Code section).
+  Keep explanations concise – the user is busy running their business.
+
+parameters:
+  - name: net_schedule_c_income
+    description: "Estimated net profit from Schedule C for the current tax year (after expenses)"
+    type: number
+    required: false
+  - name: business_type
+    description: >
+      Type of solopreneur business, e.g. "freelance software developer",
+      "independent consultant", "real estate agent", "rideshare driver"
+    type: string
+    required: false
+  - name: filing_status
+    description: "Federal filing status: single, married_filing_jointly, head_of_household"
+    type: string
+    default: "single"
+
+extensions:
+  - name: ai-tax-agent
+    type: stdio
+    cmd: poetry
+    args:
+      - run
+      - python
+      - mcp_server.py
+    description: >
+      Local AI Tax Agent MCP server exposing solopreneur-focused tax tools with
+      interactive HTML UIs (mcp-ui-server / MCP Apps standard).
+    env:
+      - GEMINI_API_KEY
+      - DATABASE_URL
+
+activities:
+  - "What Schedule C deductions can I take as a freelance developer?"
+  - "Calculate my SE tax on $85,000 net profit"
+  - "Explain the home-office deduction – simplified vs. actual method"
+  - "When are my quarterly estimated tax payments due?"
+  - "Do I qualify for the QBI deduction on my consulting income?"
+  - "What retirement accounts can I open as a solopreneur and how much can I contribute?"
+  - "Look up IRS code section 199A for QBI"
+  - "Search Schedule C instructions for vehicle mileage deduction"

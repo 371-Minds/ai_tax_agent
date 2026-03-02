@@ -1,5 +1,78 @@
 # AI Tax Agent: Simplifying the U.S. Tax Code
 
+## MCP Server & Goose Recipe – Solopreneur / TurboTax Business
+
+The project ships an **MCP (Model Context Protocol) server** built with
+[FastMCP](https://github.com/jlowin/fastmcp) and
+[mcp-ui-server](https://github.com/MCP-UI-Org/mcp-ui) that exposes solopreneur-focused
+tax tools with interactive HTML UIs compliant with the
+[MCP Apps standard](https://github.com/modelcontextprotocol/ext-apps).
+
+A ready-to-run **Goose recipe** for
+[Block Goose](https://github.com/block/goose) is included in
+`.goose/recipes/turbotax_solopreneur.yaml`.
+
+### Available MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `get_solopreneur_deductions` | Schedule C deductions with TurboTax paths & US Code refs |
+| `calculate_se_tax` | Self-employment tax calculator + above-the-line deduction |
+| `get_tax_section_details` | US Code section details, form links, and impact stats |
+| `search_schedule_c_instructions` | Semantic search over IRS form instructions |
+| `analyze_tax_text_complexity` | Flesch Reading Ease score for any tax provision |
+| `get_quarterly_estimated_tax_guide` | Form 1040-ES due dates, safe-harbor rules, payment methods |
+
+### Available MCP Resources
+
+| URI | Description |
+|-----|-------------|
+| `tax://solopreneur/schedule-c-checklist` | Complete Schedule C line-item checklist |
+| `tax://solopreneur/turbotax-business-tips` | Top TurboTax Business tips for solopreneurs |
+
+### Running the MCP Server
+
+```bash
+# stdio transport (for Claude Desktop, Goose CLI, etc.)
+poetry run python mcp_server.py
+
+# HTTP transport (for web-based MCP clients)
+poetry run python mcp_server.py --transport streamable-http --port 8080
+```
+
+### Using the Goose Recipe
+
+```bash
+# Install Goose CLI: https://block.github.io/goose/docs/getting-started/installation
+goose run --recipe .goose/recipes/turbotax_solopreneur.yaml
+```
+
+Or start an interactive session with the recipe's instructions pre-loaded:
+
+```bash
+goose session --recipe .goose/recipes/turbotax_solopreneur.yaml \
+  --net_schedule_c_income 85000 \
+  --business_type "freelance software developer"
+```
+
+### Claude Desktop Integration
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "ai-tax-agent": {
+      "command": "poetry",
+      "args": ["run", "python", "mcp_server.py"],
+      "cwd": "/path/to/ai_tax_agent"
+    }
+  }
+}
+```
+
+---
+
 ## Project Goal
 
 This project aims to build an iterative AI agent that analyzes, simplifies, and streamlines the U.S. tax code. It uses LangChain, ChromaDB (vector store), and a relational database (SQLite via SQLAlchemy/Alembic) to achieve this.
